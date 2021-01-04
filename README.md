@@ -1,5 +1,5 @@
 # Genomic targets of estrogen receptor alpha specify brain masculinization
-Custom code for Gegenhuber et al. 2020
+Custom code for Gegenhuber et al. 2021
 
 1. Neonatal RNA-seq differential gene expression 
 2. Adult RNA-seq differential gene expression
