@@ -120,3 +120,62 @@ for (i in unique(bnst_seurat_sce_filter$Cluster)){
 }
 write.table(df, "DEG_num_per_cluster_padj0.1.txt",sep = "\t",quote = FALSE)
 
+
+# Filter for ERa+ clusters
+bnst_seurat_sce_filter_Esr1 <- bnst_seurat_sce_filter[,bnst_seurat_sce_filter$Cluster %in% c("BNSTprSt18",
+                                                            "BNSTpTac2",
+                                                            "BNSTpBnc2",
+                                                            "BNSTpEpsti1",
+                                                            "BNSTprEsr2",
+                                                            "BNSTpNxph2",
+                                                            "BNSTpHaus4")]
+
+# Drop out replicate-clusters pairs with fewer than 20 nuclei
+cell_counts <- table(bnst_seurat_sce_filter_Esr1$Cluster_sample)
+threshold <- cell_counts[cell_counts > 20]
+bnst_seurat_sce_filter_Esr1_filter <- bnst_seurat_sce_filter_Esr1[,bnst_seurat_sce_filter_Esr1$Cluster_sample %in% names(threshold)]
+
+# Aggregate counts per replicate
+groups <- colData(bnst_seurat_sce_filter_Esr1_filter)[, c("ident", "Sample")]
+pb <- aggregate.Matrix(t(counts(bnst_seurat_sce_filter_Esr1_filter)), groupings = groups, fun = "sum")
+splitf <- sapply(stringr::str_split(rownames(pb), pattern = "_",  n = 2), `[`, 1)
+
+# Wrangle the dataframe
+pb <- split.data.frame(pb, factor(splitf)) %>%
+      lapply(function(u) 
+        magrittr::set_colnames(t(u), 
+                               stringr::str_extract(rownames(u), "(?<=_)[:alnum:]+")))
+for (i in seq_along(pb)){
+  colnames(pb[[i]]) <- paste0(names(pb)[i],colnames(pb[[i]]))
+}
+
+
+# Convert list of dataframes into single dataframe with gene names as row and sample name as column
+pb <- as.data.frame(do.call(cbind, pb))
+
+# Generate metadata sheet, and ensure row order matches column order of pb object
+gg_df <- data.frame(cluster_id = bnst_seurat_sce_filter_Esr1_filter$Cluster,sample_id = bnst_seurat_sce_filter_Esr1_filter$Sample)
+gg_df$sex <- ifelse(stringr::str_detect(gg_df$sample_id,"FEMALE"),"Female", "Male")
+metadata <- gg_df %>% dplyr::select(cluster_id, sample_id, sex) 
+metadata <- metadata[!duplicated(metadata), ]
+metadata$cluster_sex <- paste0(metadata$cluster_id, metadata$sex)
+metadata$cluster_sample <- paste0(metadata$cluster_id, metadata$sample_id)
+rownames(metadata) <- NULL
+metadata <- metadata[match(names(pb), metadata$cluster_sample),]
+
+# Create DESeq2 object and run analysis
+dds_cluster <- DESeqDataSetFromMatrix(pb,
+                                    colData = metadata, 
+                                    design = ~ cluster_id)
+
+dds_cluster <- DESeq(dds_cluster,betaPrior = TRUE,parallel = TRUE)
+
+# Collect and write results
+res <- results(dds_cluster, 
+               contrast = c(0,-1/6,-1/6,-1/6,-1/6,-1/6,1,-1/6),
+               lfcThreshold = 2,
+               altHypothesis = "greater",
+               alpha = 0.01)
+resOrdered <- res[order(res$pvalue),]
+resOrdered_na <- na.omit(resOrdered)
+write.csv(resOrdered_na, file="BNSTpr_St18_res.csv",quote = FALSE)
