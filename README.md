@@ -1,4 +1,4 @@
-# Genomic targets of estrogen receptor alpha specify brain masculinization
+# Estrogen receptor alpha and Nfix define a transcriptional strategy for brain masculinization
 Custom scripts for Gegenhuber et al. 2021
 
 1. Neonatal RNA-seq differential gene expression (Neonatal_RNA_DESeq2.R)
