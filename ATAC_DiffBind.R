@@ -31,8 +31,6 @@ ATAC_mEBvfCO <- dba.report(ATAC_count,contrast = 6,th=0.05,fold=1,method = DBA_E
 ATAC_fEBvfCO <- dba.report(ATAC_count,contrast = 7,th=0.05,fold=1,method = DBA_EDGER,bFlip = TRUE)
 ATAC_fEBvmEB <- dba.report(ATAC_count,contrast = 8,th=0.05,fold=1,method = DBA_EDGER,bFlip = TRUE)
 
-
-
 write.table(ATAC_fCOvmCO[ATAC_fCOvmCO$Fold>0,],"ATAC_EDGER_fCOvmCO.bed",quote = FALSE,row.names = FALSE,col.names=FALSE,sep = '\t')
 write.table(ATAC_fCOvmCO[ATAC_fCOvmCO$Fold<0,],"ATAC_EDGER_mCOvfCO.bed",quote = FALSE,row.names = FALSE,col.names=FALSE,sep = '\t')
 write.table(ATAC_mEBvmCO[ATAC_mEBvmCO$Fold>0,],"ATAC_EDGER_mEBvmCO.bed",quote = FALSE,row.names = FALSE,col.names=FALSE,sep = '\t')
