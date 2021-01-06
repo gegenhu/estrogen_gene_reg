@@ -1,6 +1,7 @@
 # Load in libraries
 library(DiffBind)
 library(DESeq2)
+library(BiocParallel)
 
 # Read in Franco et al. 2015 MCF-7 ChIP samples
 ChIP_samples <- dba(sampleSheet='sample_sheet_ChIP.csv')
