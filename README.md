@@ -1,5 +1,5 @@
 # Estrogen receptor alpha and Nfix define a transcriptional strategy for brain masculinization
-Custom scripts for Gegenhuber et al. 2021
+Custom code for Gegenhuber et al. 2021
 
 1. Neonatal RNA-seq differential gene expression (Neonatal_RNA_DESeq2.R)
 2. Adult RNA-seq differential gene expression (Adult_RNA_DESeq2.R)
