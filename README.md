@@ -1,5 +1,5 @@
 # Gene regulation by gonadal hormone receptors defines brain sex differences
-Custom code for Gegenhuber et al. 2022
+Custom code for Gegenhuber et al. Nature 2022
 
 1. Neonatal RNA-seq differential gene expression (Neonatal_RNA_DESeq2.R)
 2. Adult RNA-seq differential gene expression (Adult_RNA_DESeq2.R)
